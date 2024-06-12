@@ -1,0 +1,8 @@
+# Calculations
+pandas
+numpy
+scipy
+
+# API
+fastapi
+uvicorn
