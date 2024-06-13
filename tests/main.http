@@ -1,6 +1,53 @@
 # Endpoint testing
 
-GET http://127.0.0.1:8000/
-Accept: application/json
+POST http://127.0.0.1:6284/options/gex
+Content-Type: application/json
+
+{
+  "spot_price": 127,
+  "options_price": [
+    {
+      "expiry": "20240816",
+      "strike": 60,
+      "callIv": 0.7023,
+      "callGamma": 0.0003,
+      "callOi": 3699,
+      "putIv": 0.7679,
+      "putGamma": 0.0003,
+      "putOi": 18576
+    },
+    {
+      "expiry": "20240816",
+      "strike": 80,
+      "callIv": 0.5951,
+      "callGamma": 0.0014,
+      "callOi": 7086,
+      "putIv": 0.5952,
+      "putGamma": 0.0014,
+      "putOi": 26462
+    },
+    {
+      "expiry": "20240816",
+      "strike": 100,
+      "callIv": 0.4810,
+      "callGamma": 0.0055,
+      "callOi": 3167,
+      "putIv": 0.4809,
+      "putGamma": 0.0056,
+      "putOi": 17995
+    },
+    {
+      "expiry": "20240816",
+      "strike": 140,
+      "callIv": 0.4459,
+      "callGamma": 0.0159,
+      "callOi": 24855,
+      "putIv": 0.4426,
+      "putGamma": 0.0166,
+      "putOi": 416
+    }
+  ]
+}
 
 ###
+
