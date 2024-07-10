@@ -1,0 +1,11 @@
+# Endpoint testing
+
+POST http://127.0.0.1:6284/options/chain
+Content-Type: application/json
+
+{
+  "ticker": "NVDA",
+  "spotPx": 128
+}
+
+###

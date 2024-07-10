@@ -2,7 +2,7 @@ from rx_trade_ib_2.model.base import BasePydanticModel
 
 
 class OptionsGexPriceData(BasePydanticModel):
-    expiry: str
+    expiry: str  # YYYYMMDD
     strike: float
 
     call_iv: float

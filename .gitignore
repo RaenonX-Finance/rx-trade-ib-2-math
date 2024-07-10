@@ -1,2 +1,6 @@
 # Project files
 .idea/
+.env
+
+# Excluded test files
+tests/exclude/*

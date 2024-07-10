@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+from pydantic.alias_generators import to_camel, to_snake
 
 
 class BasePydanticModel(BaseModel):
@@ -11,4 +11,4 @@ class BasePydanticModel(BaseModel):
 
 
 class IgnoreExtraPydanticModel(BasePydanticModel):
-    model_config = ConfigDict(extra="ignore")
+    model_config = ConfigDict(alias_generator=to_snake, extra="ignore")

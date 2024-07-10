@@ -6,3 +6,7 @@ scipy
 # API
 fastapi
 uvicorn
+requests
+
+# Environment
+environs
