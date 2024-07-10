@@ -8,3 +8,7 @@ class BasePydanticModel(BaseModel):
         populate_by_name=True,
         from_attributes=True,
     )
+
+
+class IgnoreExtraPydanticModel(BasePydanticModel):
+    model_config = ConfigDict(extra="ignore")
