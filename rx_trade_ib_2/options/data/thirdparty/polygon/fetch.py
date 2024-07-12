@@ -1,13 +1,18 @@
+import logging
+
 import requests
 
 from rx_trade_ib_2.options.data.thirdparty.polygon.type import (
     PolygonIoOptionChainResponse,
-    PolygonIoOptionChainResult, PolygonIoOptionContractType,
+    PolygonIoOptionChainResult,
+    PolygonIoOptionContractType,
 )
 from rx_trade_ib_2.options.data.type.data import OptionChainQuoteData, OptionsContractPx, OptionsContractsOfStrike
 from rx_trade_ib_2.options.data.type.request import OptionChainRequest
 from rx_trade_ib_2.utils.env import Environment
 from rx_trade_ib_2.utils.iter import group_order_agnostic
+
+logger = logging.getLogger("uvicorn.error")
 
 
 def _get_chain_result_group_key(result: PolygonIoOptionChainResult):
@@ -17,15 +22,38 @@ def _get_chain_result_group_key(result: PolygonIoOptionChainResult):
 def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteData:
     ticker = request.ticker
 
-    response = requests.get(
-        f"https://api.polygon.io/v3/snapshot/options/{ticker}?limit=250&apiKey={Environment.POLYGON_API_KEY}"
+    url_suffix = f"&apiKey={Environment.POLYGON_API_KEY}"
+
+    logger.info("Fetching option chain data from polygon.io")
+    response_model = PolygonIoOptionChainResponse.model_validate(
+        requests.get(f"https://api.polygon.io/v3/snapshot/options/{ticker}?limit=250{url_suffix}").json()
     )
-    response_model = PolygonIoOptionChainResponse.model_validate(response.json())
+    while response_model.next_url:
+        logger.info(f"Fetching option chain data from polygon.io: {response_model.next_url}")
+        response_model.merge_in_place(PolygonIoOptionChainResponse.model_validate(
+            requests.get(f"{response_model.next_url}{url_suffix}").json()
+        ))
 
     spot_px = request.spot_px or response_model.results[0].underlying_asset.price
 
+    results_to_process = response_model.results
+
+    # Skip processing contracts
+    if request.range_percent is not None:
+        results_to_process = [
+            result for result in results_to_process
+            if abs(result.details.strike_price / spot_px - 1) <= request.range_percent / 100
+        ]
+
+    # Skip processing contracts
+    if request.expiry_days is not None:
+        results_to_process = [
+            result for result in results_to_process
+            if result.details.days_till_expiry <= request.expiry_days
+        ]
+
     contracts: list[OptionsContractsOfStrike] = []
-    for (strike, expiry), results in group_order_agnostic(response_model.results, _get_chain_result_group_key):
+    for (strike, expiry), results in group_order_agnostic(results_to_process, _get_chain_result_group_key):
         call: PolygonIoOptionChainResult = next(
             (result for result in results if result.details.contract_type == PolygonIoOptionContractType.CALL),
             None)

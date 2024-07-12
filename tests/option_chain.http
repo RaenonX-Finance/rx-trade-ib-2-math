@@ -5,7 +5,9 @@ Content-Type: application/json
 
 {
   "ticker": "NVDA",
-  "spotPx": 128
+  "spotPx": 128,
+  "rangePercent": 30,
+  "expiryDays": 150
 }
 
 ###

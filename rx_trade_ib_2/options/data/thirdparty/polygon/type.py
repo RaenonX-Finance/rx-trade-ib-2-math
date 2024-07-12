@@ -1,5 +1,8 @@
+import math
+from datetime import datetime
 from enum import Enum
 
+from rx_trade_ib_2.const import TZ_US_EXCHANGE
 from rx_trade_ib_2.model.base import IgnoreExtraPydanticModel
 
 
@@ -45,6 +48,14 @@ class PolygonIoOptionChainDetails(IgnoreExtraPydanticModel):
     strike_price: float
     ticker: str
 
+    @property
+    def expiration_date_as_python(self) -> datetime:
+        return datetime.strptime(self.expiration_date, "%Y-%m-%d").replace(tzinfo=TZ_US_EXCHANGE)
+
+    @property
+    def days_till_expiry(self) -> int:
+        return math.floor((self.expiration_date_as_python - datetime.now(TZ_US_EXCHANGE)).total_seconds() / 86400)
+
 
 class PolygonIoOptionChainGreeks(IgnoreExtraPydanticModel):
     delta: float | None = None
@@ -77,3 +88,10 @@ class PolygonIoOptionChainResponse(IgnoreExtraPydanticModel):
     request_id: str
     results: list[PolygonIoOptionChainResult]
     status: PolygonIoResponseStatus
+    next_url: str | None = None
+
+    def merge_in_place(self, other: "PolygonIoOptionChainResponse"):
+        self.request_id = other.request_id
+        self.results.extend(other.results)
+        self.status = other.status
+        self.next_url = other.next_url

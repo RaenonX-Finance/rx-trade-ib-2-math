@@ -10,7 +10,7 @@ def calc_gamma_flip(
 ) -> float | None:
     gamma_flip_idx = np.where(np.diff(np.sign(total_gamma)))[0]
 
-    if not gamma_flip_idx:
+    if len(gamma_flip_idx) == 0:
         return None
 
     gamma_at_neg = total_gamma[gamma_flip_idx][0]
