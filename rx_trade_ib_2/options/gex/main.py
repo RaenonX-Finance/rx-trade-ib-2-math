@@ -1,8 +1,9 @@
-from datetime import UTC, datetime
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
 
+from rx_trade_ib_2.const import TZ_US_EXCHANGE
 from rx_trade_ib_2.options.gex.gamma_field import calc_gamma_field
 from rx_trade_ib_2.options.gex.gamma_flip import calc_gamma_flip
 from rx_trade_ib_2.options.gex.net_gamma import calc_net_gamma_at_price
@@ -11,7 +12,7 @@ from rx_trade_ib_2.options.gex.response import OptionsGexStatsResponse
 
 
 def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
-    today_date = datetime.now(UTC).date()
+    today_date = datetime.now(TZ_US_EXCHANGE).date()
 
     df = pd.json_normalize([obj.model_dump() for obj in request.options_price])
 
