@@ -23,7 +23,7 @@ def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
 
     df["total_gex"] = (df["call_gex"] + df["put_gex"])
 
-    price_levels = np.linspace(request.strike_min, request.strike_max, 60)
+    price_levels = np.array(sorted(set(price_data.strike for price_data in request.options_price)))
 
     # 0 DTE options, will have DTE = 1. Otherwise, they get excluded
     df["eq_years_till_expiry"] = np.max(
