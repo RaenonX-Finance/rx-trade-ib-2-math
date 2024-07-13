@@ -16,8 +16,10 @@ def calc_net_gamma_at_price(
     if eq_years_till_expiry == 0 or vol == 0:
         return 0
 
-    dp = (np.log(spot_price / strike) + (0.5 * vol ** 2) * eq_years_till_expiry) / (
-            vol * np.sqrt(eq_years_till_expiry))
+    dp = (
+            (np.log(spot_price / strike) + (0.5 * vol ** 2) * eq_years_till_expiry) /
+            (vol * np.sqrt(eq_years_till_expiry))
+    )
     dm = dp - vol * np.sqrt(eq_years_till_expiry)
 
     match option_type:

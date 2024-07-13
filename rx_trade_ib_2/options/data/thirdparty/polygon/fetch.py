@@ -1,7 +1,6 @@
-import logging
-
 import requests
 
+from rx_trade_ib_2.const import LOGGER
 from rx_trade_ib_2.options.data.thirdparty.polygon.type import (
     PolygonIoOptionChainResponse,
     PolygonIoOptionChainResult,
@@ -11,8 +10,6 @@ from rx_trade_ib_2.options.data.type.data import OptionChainQuoteData, OptionsCo
 from rx_trade_ib_2.options.data.type.request import OptionChainRequest
 from rx_trade_ib_2.utils.env import Environment
 from rx_trade_ib_2.utils.iter import group_order_agnostic
-
-logger = logging.getLogger("uvicorn.error")
 
 
 def _get_chain_result_group_key(result: PolygonIoOptionChainResult):
@@ -24,12 +21,12 @@ def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteD
 
     url_suffix = f"&apiKey={Environment.POLYGON_API_KEY}"
 
-    logger.info("Fetching option chain data from polygon.io")
+    LOGGER.info("Fetching option chain data from polygon.io")
     response_model = PolygonIoOptionChainResponse.model_validate(
         requests.get(f"https://api.polygon.io/v3/snapshot/options/{ticker}?limit=250{url_suffix}").json()
     )
     while response_model.next_url:
-        logger.info(f"Fetching option chain data from polygon.io: {response_model.next_url}")
+        LOGGER.info(f"Fetching option chain data from polygon.io: {response_model.next_url}")
         response_model.merge_in_place(PolygonIoOptionChainResponse.model_validate(
             requests.get(f"{response_model.next_url}{url_suffix}").json()
         ))

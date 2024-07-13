@@ -3,7 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-from rx_trade_ib_2.const import TZ_US_EXCHANGE
+from rx_trade_ib_2.const import LOGGER, TZ_US_EXCHANGE
 from rx_trade_ib_2.options.gex.gamma_field import calc_gamma_field
 from rx_trade_ib_2.options.gex.gamma_flip import calc_gamma_flip
 from rx_trade_ib_2.options.gex.net_gamma import calc_net_gamma_at_price
@@ -24,6 +24,7 @@ def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
     df["total_gex"] = (df["call_gex"] + df["put_gex"])
 
     price_levels = np.array(sorted(set(price_data.strike for price_data in request.options_price)))
+    level_count = len(price_levels)
 
     # 0 DTE options, will have DTE = 1. Otherwise, they get excluded
     df["eq_years_till_expiry"] = np.max(
@@ -40,7 +41,7 @@ def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
     total_gamma = []
 
     # For each spot level, calc gamma exposure at that point
-    for level in price_levels:
+    for (idx, level) in enumerate(price_levels, start=1):
         df["call_net_gamma"] = df.apply(
             lambda row: calc_net_gamma_at_price(
                 level,
@@ -65,7 +66,12 @@ def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
             axis=1
         )
 
-        total_gamma.append(df["call_net_gamma"].sum() - df["put_net_gamma"].sum())
+        net_gamma = df["call_net_gamma"].sum() - df["put_net_gamma"].sum()
+        LOGGER.info(
+            f"Calculating net gamma of {level:>10.2f} ({idx:>4} / {level_count:>4} - {idx / level_count:.2%}): "
+            f"${net_gamma:>23,.2f}"
+        )
+        total_gamma.append(net_gamma)
 
     total_gamma = np.array(total_gamma)
 
