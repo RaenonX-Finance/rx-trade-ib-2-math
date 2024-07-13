@@ -17,7 +17,7 @@ class OptionsContractsOfStrike(BasePydanticModel):
     call: str | None
     put: str | None
     strike: float
-    expiry: str  # YYYY-MM-DD
+    expiry: str  # YYYYMMDD - to conform with what IBKR sends
 
 
 class OptionChainQuoteData(BasePydanticModel):

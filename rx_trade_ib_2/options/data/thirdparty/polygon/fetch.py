@@ -66,7 +66,7 @@ def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteD
             call=call.details.ticker if call else None,
             put=put.details.ticker if put else None,
             strike=strike,
-            expiry=expiry
+            expiry=expiry.replace("-", "")
         ))
 
     return OptionChainQuoteData(
