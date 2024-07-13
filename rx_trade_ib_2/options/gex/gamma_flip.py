@@ -5,11 +5,11 @@ import numpy.typing as npt
 def calc_gamma_flip(
     total_gamma: npt.NDArray[np.float64],
     price_levels: npt.NDArray[np.float64],
-) -> npt.NDArray[np.float64] | None:
+) -> npt.NDArray[np.float64]:
     gamma_flip_idx = np.where(np.diff(np.sign(total_gamma)))[0]
 
     if len(gamma_flip_idx) == 0:
-        return None
+        return np.array([])
 
     gamma_at_neg = total_gamma[gamma_flip_idx]
     gamma_at_pos = total_gamma[gamma_flip_idx + 1]
