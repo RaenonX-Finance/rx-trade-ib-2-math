@@ -68,7 +68,7 @@ def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
 
         net_gamma = df["call_net_gamma"].sum() - df["put_net_gamma"].sum()
         LOGGER.info(
-            f"Calculating net gamma of {level:>10.2f} ({idx:>4} / {level_count:>4} - {idx / level_count:.2%}): "
+            f"Calculating net gamma of {level:>10.2f} ({idx:>4} / {level_count:>4} - {idx / level_count:>7.2%}): "
             f"${net_gamma:>23,.2f}"
         )
         total_gamma.append(net_gamma)
@@ -77,5 +77,5 @@ def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
 
     return OptionsGexStatsResponse(
         gamma_field=calc_gamma_field(total_gamma, price_levels),
-        gamma_flip=calc_gamma_flip(total_gamma, price_levels),
+        gamma_flip=calc_gamma_flip(total_gamma, price_levels).tolist(),
     )
