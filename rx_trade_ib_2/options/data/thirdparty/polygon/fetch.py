@@ -78,7 +78,7 @@ def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteD
                 # FIXME: Could be incorrect, inquiring
                 px=result.day.close,
                 # FIXME: Could be incorrect, inquiring
-                px_updated=result.day.last_updated,
+                px_updated=result.day.last_updated / 1E9 if result.day.last_updated else None,
                 open_interest=result.open_interest,
                 # IV could be empty, not sure how to handle it, so keeping 0 for now
                 iv=result.implied_volatility / 100 if result.implied_volatility else 0,
