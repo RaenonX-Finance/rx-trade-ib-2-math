@@ -7,6 +7,6 @@ from rx_trade_ib_2.options.gex.main import calc_gex_stats
 
 def get_option_chain(request: OptionChainRequest) -> OptionChainResponse:
     quote = fetch_data_from_polygon_io(request)
-    gex = calc_gex_stats(to_gex_stats_request(quote, request.gex_expiry_exclusions or []))
+    gex = calc_gex_stats(to_gex_stats_request(quote, request))
 
     return OptionChainResponse(quote=quote, gex=gex)

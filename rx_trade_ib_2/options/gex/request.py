@@ -21,6 +21,7 @@ class OptionsGexPriceData(BasePydanticModel):
 
 class OptionsGexStatsRequest(BasePydanticModel):
     spot_price: float
+    avg_volume: float | None
     options_price: list[OptionsGexPriceData]
     expiry_exclusions: list[str]  # YYYYMMDD
 
