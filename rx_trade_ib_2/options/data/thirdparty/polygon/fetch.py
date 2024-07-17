@@ -50,6 +50,7 @@ def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteD
         ]
 
     contracts: list[OptionsContractsOfStrike] = []
+
     for (strike, expiry), results in group_order_agnostic(results_to_process, _get_chain_result_group_key):
         call: PolygonIoOptionChainResult = next(
             (result for result in results if result.details.contract_type == PolygonIoOptionContractType.CALL),
@@ -63,7 +64,7 @@ def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteD
             call=call.details.ticker if call else None,
             put=put.details.ticker if put else None,
             strike=strike,
-            expiry=expiry.replace("-", "")
+            expiry=expiry
         ))
 
     return OptionChainQuoteData(
@@ -72,9 +73,7 @@ def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteD
         option_px={
             result.details.ticker: OptionsContractPx(
                 ticker=result.details.ticker,
-                # FIXME: Could be incorrect, inquiring
                 px=result.day.close,
-                # FIXME: Could be incorrect, inquiring
                 px_updated=result.day.last_updated / 1E9 if result.day.last_updated else None,
                 open_interest=result.open_interest,
                 # IV could be empty, not sure how to handle it, so keeping 0 for now

@@ -2,6 +2,8 @@ import math
 from datetime import datetime
 from enum import Enum
 
+from pydantic import field_validator
+
 from rx_trade_ib_2.const import TZ_US_EXCHANGE
 from rx_trade_ib_2.model.base import IgnoreExtraPydanticModel
 
@@ -43,14 +45,20 @@ class PolygonIoOptionChainDailyBar(IgnoreExtraPydanticModel):
 class PolygonIoOptionChainDetails(IgnoreExtraPydanticModel):
     contract_type: PolygonIoOptionContractType
     exercise_style: PolygonIoOptionExerciseStyle
-    expiration_date: str  # YYYY-MM-DD
+    expiration_date: str  # YYYYMMDD
     shares_per_contract: float
     strike_price: float
     ticker: str
 
+    @field_validator("expiration_date")
+    @classmethod
+    def format_expiration_date(cls, value: str):
+        # Format the incoming `expiration_date` from the API from `YYYY-MM-DD` to `YYYYMMDD`
+        return value.replace("-", "")
+
     @property
     def expiration_date_as_python(self) -> datetime:
-        return datetime.strptime(self.expiration_date, "%Y-%m-%d").replace(tzinfo=TZ_US_EXCHANGE)
+        return datetime.strptime(self.expiration_date, "%Y%m%d").replace(tzinfo=TZ_US_EXCHANGE)
 
     @property
     def days_till_expiry(self) -> int:

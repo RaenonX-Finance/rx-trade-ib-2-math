@@ -7,7 +7,7 @@ def to_gex_stats_request(quote: OptionChainQuoteData) -> OptionsGexStatsRequest:
         spot_price=quote.spot_px,
         options_price=[
             OptionsGexPriceData(
-                expiry=contract.expiry.replace("-", ""),  # `YYYY-MM-DD` to `YYYYMMDD`
+                expiry=contract.expiry,
                 strike=contract.strike,
                 call_iv=quote.option_px[contract.call].iv if contract.call else 0,
                 call_gamma=(quote.option_px[contract.call].gamma or 0) if contract.call else 0,
