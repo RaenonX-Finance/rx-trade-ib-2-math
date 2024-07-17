@@ -67,23 +67,27 @@ def fetch_data_from_polygon_io(request: OptionChainRequest) -> OptionChainQuoteD
             expiry=expiry
         ))
 
+    option_px = {}
+    for result in response_model.results:
+        if not result.greeks:
+            LOGGER.warn("Greeks of %s is unavailable!", result.details.ticker)
+
+        option_px[result.details.ticker] = OptionsContractPx(
+            ticker=result.details.ticker,
+            px=result.day.close,
+            px_updated=result.day.last_updated / 1E9 if result.day.last_updated else None,
+            open_interest=result.open_interest,
+            # IV could be empty, not sure how to handle it, so keeping 0 for now
+            iv=result.implied_volatility / 100 if result.implied_volatility else 0,
+            delta=result.greeks.delta,
+            theta=result.greeks.theta,
+            gamma=result.greeks.gamma,
+            vega=result.greeks.vega,
+        )
+
     return OptionChainQuoteData(
         ticker=ticker,
         spot_px=spot_px,
-        option_px={
-            result.details.ticker: OptionsContractPx(
-                ticker=result.details.ticker,
-                px=result.day.close,
-                px_updated=result.day.last_updated / 1E9 if result.day.last_updated else None,
-                open_interest=result.open_interest,
-                # IV could be empty, not sure how to handle it, so keeping 0 for now
-                iv=result.implied_volatility / 100 if result.implied_volatility else 0,
-                delta=result.greeks.delta,
-                theta=result.greeks.theta,
-                gamma=result.greeks.gamma,
-                vega=result.greeks.vega,
-            )
-            for result in response_model.results
-        },
+        option_px=option_px,
         contracts=contracts,
     )
