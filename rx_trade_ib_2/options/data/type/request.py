@@ -6,3 +6,4 @@ class OptionChainRequest(BasePydanticModel):
     spot_px: float | None = None
     range_percent: float | None = None
     expiry_days: int | None = None
+    gex_expiry_exclusions: list[str] | None = None  # YYYYMMDD

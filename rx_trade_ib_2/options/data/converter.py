@@ -2,7 +2,7 @@ from rx_trade_ib_2.options.data.type.data import OptionChainQuoteData
 from rx_trade_ib_2.options.gex.request import OptionsGexPriceData, OptionsGexStatsRequest
 
 
-def to_gex_stats_request(quote: OptionChainQuoteData) -> OptionsGexStatsRequest:
+def to_gex_stats_request(quote: OptionChainQuoteData, expiry_exclusions: list[str]) -> OptionsGexStatsRequest:
     return OptionsGexStatsRequest(
         spot_price=quote.spot_px,
         options_price=[
@@ -17,5 +17,6 @@ def to_gex_stats_request(quote: OptionChainQuoteData) -> OptionsGexStatsRequest:
                 put_oi=quote.option_px[contract.put].open_interest if contract.put else 0,
             )
             for contract in quote.contracts
-        ]
+        ],
+        expiry_exclusions=expiry_exclusions
     )
