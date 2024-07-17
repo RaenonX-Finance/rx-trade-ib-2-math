@@ -77,5 +77,5 @@ def calc_gex_stats(request: OptionsGexStatsRequest) -> OptionsGexStatsResponse:
 
     return OptionsGexStatsResponse(
         gamma_field=calc_gamma_field(total_gamma, price_levels),
-        gamma_flip=calc_gamma_flip(total_gamma, price_levels).tolist(),
+        gamma_flip=calc_gamma_flip(total_gamma, price_levels),
     )
